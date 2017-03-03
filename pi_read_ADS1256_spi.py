@@ -12,7 +12,7 @@ import spidev
 
 
 ads = pyads1256.ADS1256()
-
+ads.init()
 idNumber = ads.ReadID()
 print("\nADS1256 reported ID value: {}".format(idNumber))
 

@@ -252,12 +252,18 @@ class ADS1256:
         wp.pinMode(self.CS_PIN, wp.OUTPUT)
         wp.digitalWrite(self.CS_PIN, wp.HIGH)
 
-
+        self.spi = spidev.SpiDev()
 
         # # Initialize the wiringpi SPI setup
         # spi_success = wp.wiringPiSPISetup(self.SPI_CHANNEL, self.SPI_FREQUENCY)
         # debug_print("SPI success " + str(spi_success))
 
+
+    def init(self):
+        self.spi.open(0, 0)
+        self.spi.mode = 0b11
+        self.spi.max_speed_hz = 1000000
+        self.spi.cshigh = False
 
     def chip_select(self):
         wp.digitalWrite(self.CS_PIN, wp.LOW)
@@ -289,7 +295,7 @@ class ADS1256:
         debug_print("Sending: " + str(byte))
         data = chr(byte)
 
-
+        result = self.spi.xfer([byte])
         # result = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, data)
 
         debug_print("Read " + str(data))
@@ -299,7 +305,8 @@ class ADS1256:
         Reads a byte from the SPI bus
         :returns: byte read from the bus
         """
-        byte = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, chr(0x00))
+        byte = self.spi.xfer([0x00])
+        # byte = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, chr(0x00))
         return byte
 
     def DataDelay(self):
