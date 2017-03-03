@@ -1,5 +1,13 @@
 import time
-import wiringpi2 as wp
+import wiringpi as wp
+import spidev
+import time
+import spihandle
+
+
+
+
+
 
 def debug_print(string):
     if True:
@@ -47,6 +55,7 @@ class ADS1256:
     SCLK_FREQUENCY  = 7680000 # default clock rate is 7.68MHz
 
     # The RPI GPIO to use for chip select and ready polling
+    # use physical pin mum __chark
     CS_PIN      = 15 
     DRDY_PIN    = 11
     RESET_PIN   = 12
@@ -243,9 +252,11 @@ class ADS1256:
         wp.pinMode(self.CS_PIN, wp.OUTPUT)
         wp.digitalWrite(self.CS_PIN, wp.HIGH)
 
-        # Initialize the wiringpi SPI setup
-        spi_success = wp.wiringPiSPISetup(self.SPI_CHANNEL, self.SPI_FREQUENCY) 
-        debug_print("SPI success " + str(spi_success))
+
+
+        # # Initialize the wiringpi SPI setup
+        # spi_success = wp.wiringPiSPISetup(self.SPI_CHANNEL, self.SPI_FREQUENCY)
+        # debug_print("SPI success " + str(spi_success))
 
 
     def chip_select(self):
@@ -277,7 +288,10 @@ class ADS1256:
         debug_print("Entered SendByte")
         debug_print("Sending: " + str(byte))
         data = chr(byte)
-        result = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, data)
+
+
+        # result = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, data)
+
         debug_print("Read " + str(data))
 
     def ReadByte(self):
