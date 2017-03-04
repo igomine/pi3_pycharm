@@ -304,11 +304,9 @@ class ADS1256:
         Reads a byte from the SPI bus
         :returns: byte read from the bus
         """
-        # byte = self.spi.xfer([chr(0x00)])
-        byte = self.spi.xfer2([0xff]+[0x0])
-        # byte = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, chr(0x00))
-        # return byte
-        return ord(byte[1])  # JKR
+        byte = self.spi.xfer2([0xff])
+        debug_print("ReadByte: byte[0]" + str(byte[0]) + " (hex " + hex(byte[0]) + ")")
+        return byte[0]  # JKR
 
     def DataDelay(self):
         """
@@ -362,12 +360,13 @@ class ADS1256:
         self.DataDelay()
 
         # Read the register contents
-        read = self.ReadByte()
+        idreturn = self.ReadByte()
+        debug_print("idreturn: " + str(idreturn) + " (hex " + hex(idreturn) + ")")
 
         # Release the SPI bus
         self.chip_release()
 
-        return read
+        return idreturn
 
     def WriteReg(self, start_register, data):
         """
@@ -451,4 +450,5 @@ class ADS1256:
         """
         self.WaitDRDY()
         myid = self.ReadReg(self.REG_STATUS, 1)
-        return myid >> 4
+        debug_print("readID: myid = " + str(myid))
+        return myid>>4
