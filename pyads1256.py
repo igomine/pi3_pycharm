@@ -11,7 +11,8 @@ import time
 
 def debug_print(string):
     if True:
-        print("DEBUG: " + string)
+        pass
+        # print("DEBUG: " + string)
 
 
 class ADS1256:
@@ -74,6 +75,17 @@ class ADS1256:
     REG_FSC1 = 0x09
     REG_FSC2 = 0x0A
     NUM_REG = 11
+
+    # Mux channel selection
+    MUX_AIN0 = 0x0
+    MUX_AIN1 = 0x1
+    MUX_AIN2 = 0x2
+    MUX_AIN3 = 0x3
+    MUX_AIN4 = 0x4
+    MUX_AIN5 = 0x5
+    MUX_AIN6 = 0x6
+    MUX_AIN7 = 0x7
+    MUX_AINCOM = 0x8
 
     """
     DRATE Register: A/D Data Rate Address 0x03 The 16 valid Data Rate settings are shown below. Make sure to select a
@@ -264,6 +276,9 @@ class ADS1256:
         self.spi.max_speed_hz = 1000000
         self.spi.cshigh = False
 
+    def spi_close(self):
+        self.spi.close()
+
     def chip_select(self):
         wp.digitalWrite(self.CS_PIN, wp.LOW)
 
@@ -290,13 +305,10 @@ class ADS1256:
         """
         Sends a byte to the SPI bus
         """
-        debug_print("Entered SendByte")
-        # debug_print("Sending: " + str(byte))
         debug_print("Sending: " + str(byte) + " (hex " + hex(byte) + ")")
         data = chr(byte)
 
         result = self.spi.xfer2([byte])
-        debug_print("Read test")
         # debug_print("Read " + str(result[1]))
 
     def ReadByte(self):
@@ -442,6 +454,15 @@ class ADS1256:
         total = (result1 << 16) + (result2 << 8) + result3
 
         return total
+
+    def SetInputMux(self, possel, negsel):
+        debug_print("setting mux position")
+
+        self.chip_select()
+        self.SendByte(self.CMD_WREG | 0x01)
+        self.SendByte(0x00)
+        self.SendByte((possel << 4) | (negsel << 0))
+        self.chip_release()
 
     def ReadID(self): 
         """
