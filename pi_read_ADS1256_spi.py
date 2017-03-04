@@ -1,15 +1,6 @@
-# raspberry connect to waveshare high-precision AD/DA board
-
-
-## simple ADC test contributed by:   ul-gh
-
 import pyads1256
 import sys
 import time
-import spidev
-
-
-
 
 ads = pyads1256.ADS1256()
 ads.init()

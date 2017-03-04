@@ -2,7 +2,7 @@ import time
 import wiringpi as wp
 import spidev
 import time
-import spihandle
+
 
 
 
@@ -62,18 +62,18 @@ class ADS1256:
     PDWN_PIN    = 13
 
     # Register addresses
-    REG_STATUS  = 0x00
-    REG_MUX     = 0x01
-    REG_ADCON   = 0x02
-    REG_DRATE   = 0x03
-    REG_IO      = 0x04
-    REG_OFC0    = 0x05
-    REG_OFC1    = 0x06
-    REG_OFC2    = 0x07
-    REG_FSC0    = 0x08
-    REG_FSC1    = 0x09
-    REG_FSC2    = 0x0A
-    NUM_REG     = 11
+    REG_STATUS = 0x00
+    REG_MUX = 0x01
+    REG_ADCON = 0x02
+    REG_DRATE = 0x03
+    REG_IO = 0x04
+    REG_OFC0 = 0x05
+    REG_OFC1 = 0x06
+    REG_OFC2 = 0x07
+    REG_FSC0 = 0x08
+    REG_FSC1 = 0x09
+    REG_FSC2 = 0x0A
+    NUM_REG = 11
 
     """
     DRATE Register: A/D Data Rate Address 0x03 The 16 valid Data Rate settings are shown below. Make sure to select a
@@ -258,10 +258,9 @@ class ADS1256:
         # spi_success = wp.wiringPiSPISetup(self.SPI_CHANNEL, self.SPI_FREQUENCY)
         # debug_print("SPI success " + str(spi_success))
 
-
     def init(self):
         self.spi.open(0, 0)
-        self.spi.mode = 0b11
+        self.spi.mode = 0b01
         self.spi.max_speed_hz = 1000000
         self.spi.cshigh = False
 
@@ -292,22 +291,24 @@ class ADS1256:
         Sends a byte to the SPI bus
         """
         debug_print("Entered SendByte")
-        debug_print("Sending: " + str(byte))
+        # debug_print("Sending: " + str(byte))
+        debug_print("Sending: " + str(byte) + " (hex " + hex(byte) + ")")
         data = chr(byte)
 
-        result = self.spi.xfer([byte])
-        # result = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, data)
-
-        debug_print("Read " + str(data))
+        result = self.spi.xfer2([byte])
+        debug_print("Read test")
+        # debug_print("Read " + str(result[1]))
 
     def ReadByte(self):
         """
         Reads a byte from the SPI bus
         :returns: byte read from the bus
         """
-        byte = self.spi.xfer([0x00])
+        # byte = self.spi.xfer([chr(0x00)])
+        byte = self.spi.xfer2([0xff]+[0x0])
         # byte = wp.wiringPiSPIDataRW(self.SPI_CHANNEL, chr(0x00))
-        return byte
+        # return byte
+        return ord(byte[1])  # JKR
 
     def DataDelay(self):
         """
@@ -330,7 +331,6 @@ class ADS1256:
         while elapsed < self.DATA_TIMEOUT:
             elapsed = time.time() - start
 
-
     def ReadReg(self, start_reg, num_to_read):
         """
         Read the provided register, implements:
@@ -351,11 +351,9 @@ class ADS1256:
         end of the RREG command and the beginning of shifting data on DOUT: t6.
         """
 
-        result = []
-
         # Pull the SPI bus low
         self.chip_select()
-        
+
         # Send the byte command
         self.SendByte(self.CMD_RREG | start_reg)
         self.SendByte(0x00)
@@ -395,7 +393,7 @@ class ADS1256:
         self.chip_select()
 
         # Tell the ADS chip which register to start writing at
-        self.SendByte(CMD_WREG | register)
+        self.SendByte(self.CMD_WREG | start_register)
 
         # Tell the ADS chip how many additional registers to write
         self.SendByte(0x00)
@@ -427,26 +425,24 @@ class ADS1256:
         self.WaitDRDY()
 
         # Send the read command
-        self.SendByte(CMD_RDATA)
+        self.SendByte(self.CMD_RDATA)
         
         # Wait through the data pause
         self.DataDelay()
 
         # The result is 24 bits
-        result.append(self.ReadByte())
-        result.append(self.ReadByte())
-        result.append(self.ReadByte())
+        result1 = self.ReadByte()
+        result2 = self.ReadByte()
+        result3 = self.ReadByte()
+        debug_print('ReadADC result bytes: ' + hex(result1) + ' ' + hex(result2) + ' ' + hex(result3))
 
         # Release the SPI bus
         self.chip_release()
 
         # Concatenate the bytes
-        total  = (result[0] << 16)
-        total |= (result[1] << 8)
-        total |= result[2]
+        total = (result1 << 16) + (result2 << 8) + result3
 
         return total
-
 
     def ReadID(self): 
         """
@@ -455,4 +451,4 @@ class ADS1256:
         """
         self.WaitDRDY()
         myid = self.ReadReg(self.REG_STATUS, 1)
-        return (myid >> 4)
+        return myid >> 4
