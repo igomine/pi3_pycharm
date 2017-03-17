@@ -19,6 +19,7 @@ spi.cshigh = False
 spi_send = [0xff, 0xa4]
 
 
+
 try:
     while True:
         resp = spi.xfer(spi_send)
