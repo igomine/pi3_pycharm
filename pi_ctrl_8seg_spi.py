@@ -17,6 +17,7 @@ spi.max_speed_hz = 50
 spi.cshigh = False
 
 
+
 spi_send = [0xff, 0xa4]
 
 
