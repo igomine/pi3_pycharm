@@ -14,6 +14,7 @@ spi.open(0, 0)
 # print(spi.lsbfirst)
 spi.mode = 0b11
 spi.max_speed_hz = 50
+
 spi.cshigh = False
 
 
