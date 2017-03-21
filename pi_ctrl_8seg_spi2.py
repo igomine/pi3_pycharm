@@ -21,10 +21,21 @@ def display(num):
     bit1 = num / 10 % 10
     bit2 = num / 100 % 10
     bit3 = num / 1000 % 10
-
+    disp_num = []
+    while num > 0:
+        disp_num.append(num % 10)
+        num //= 10
+        if num == 0:
+            break
+    for i in range(4):
+        spi.xfer([wei_code[i], duan_code[disp_num[i]]])
+        time.sleep(0.001)
 try:
     while True:
-        resp = spi.xfer(spi_send)
+        display(1024)
 except KeyboardInterrupt:
     print("exit")
     spi.close()
+
+# exercise1 :change code to support 8 bit digi-seg
+# exercise2 :show clock in digi-seg

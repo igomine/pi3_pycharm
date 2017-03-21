@@ -19,7 +19,7 @@ spi.max_speed_hz = 50
 spi.cshigh = False
 
 
-
+# 0xff select all the bit-sel ,0xa4 send to seg-sel
 spi_send = [0xff, 0xa4]
 
 
