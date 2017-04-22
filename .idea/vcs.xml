@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/dht11/DHT11_Python" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/picamera/raspberry pi video aquisition" vcs="Git" />
+  </component>
+</project>
