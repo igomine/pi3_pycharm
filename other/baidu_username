@@ -1,0 +1,15 @@
+tcp://swpu-iot.mqtt.iot.gz.baidubce.com:1883
+ssl://swpu-iot.mqtt.iot.gz.baidubce.com:1884
+wss://swpu-iot.mqtt.iot.gz.baidubce.com:8884
+实例 swpu-iot
+设备raspberrypi
+身份sensor_node
+登陆用户名swpu-iot/raspberrypi
+密钥PLhnSjZDw5z31n2NKI/v8ifr8w+luyE/+p4otPcTx1E=
+权限：发布主题temperature
+
+设备client
+身份client
+登陆用户名swpu-iot/client
+密钥H97N6f2ZVQ4hPagEY+nWRsz80V3J/FJgEaRmAC43ATY=
+权限：订阅主题temperature
